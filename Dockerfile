@@ -1,8 +1,10 @@
 FROM ubuntu
+
 MAINTAINER Kelvin Abrokwa (kelvinabrokwa@gmail.com)
-RUN apt-get update
-RUN apt-get install -y --force-yes gcc-avr binutils-avr avr-libc
-RUN mkdir /build
-ADD ./ /build
-WORKDIR /build
-CMD ["make"]
+
+# install dependencies
+RUN apt-get update && apt-get install -y \
+        build-essential \
+        gcc-avr \
+        binutils-avr \
+        avr-libc
