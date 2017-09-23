@@ -1,4 +1,8 @@
-sudo: required
+addons:
+    apt:
+        packages:
+            - build-essential
+            - gcc-avr
+            - avr-libc
 
-services:
-    - docker
+script: make
