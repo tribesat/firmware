@@ -1,7 +1,27 @@
-all:
-	avr-gcc -g -Os -mmcu=atmega32 -c blink.cpp
-	avr-gcc -g -mmcu=atmega32 -o blink.elf blink.o
-	avr-objcopy -j .text -j .data -O ihex blink.elf blink.hex
+CC = avr-gcc
+OBJCOPY = avr-objcopy
+MMCU = atmega328p
+CFLAGS = -g -Os -mmcu=$(MMCU) -c -Wall
+LDFLAGS = -g -mmcu=$(MMCU)
+HEXFLAGS = -j .text -j .data -O ihex
+SOURCES = blink.cpp
+OBJECTS = $(SOURCES:.cpp=.o)
+BINARY = blink.elf
+HEX = blink.hex
+
+all: $(HEX)
+
+# compile .cpp files to .o
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+# link .o files to .elf binary
+$(BINARY): $(OBJECTS)
+	$(CC) $(LDFLAGS) $^ -o $@
+
+# convert .elf to hex file
+$(HEX): $(BINARY)
+	$(OBJCOPY) $(HEXFLAGS) $< $@
 
 docker-build:
 	mkdir -p build
