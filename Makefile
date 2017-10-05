@@ -10,7 +10,7 @@ HEXFLAGS = -j .text -j .data -O ihex
 
 DEFS = -DF_CPU=16000000UL
 
-SOURCES = blink.cpp
+SOURCES = ./src/blink.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 BINARY = blink.elf
 HEX = blink.hex
@@ -40,4 +40,4 @@ get-deps:
 	sudo apt-get install -y build-essential gcc-avr avr-libc
 
 clean:
-	rm -f *.o *.elf *.hex
+	rm -f ./src/*.o *.elf *.hex
