@@ -30,7 +30,6 @@ $(HEX): $(BINARY)
 	$(OBJCOPY) $(HEXFLAGS) $< $@
 
 docker-build:
-	mkdir -p build
 	docker build -t firmware-builder .
 	docker run -it -v `pwd`/:/firmware firmware-builder /bin/bash -c "cd firmware; make"
 
