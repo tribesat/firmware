@@ -1,10 +1,12 @@
-FROM ubuntu
+FROM alpine
 
 MAINTAINER Kelvin Abrokwa (kelvinabrokwa@gmail.com)
 
 # install dependencies
-RUN apt-get update && apt-get install -y \
-        build-essential \
+RUN apk add --update \
+        alpine-sdk \
         gcc-avr \
         binutils-avr \
         avr-libc
+
+WORKDIR firmware/
