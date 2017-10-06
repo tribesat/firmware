@@ -9,5 +9,4 @@ RUN apk add --update \
         binutils-avr \
         avr-libc
 
-ADD . firmware/
 WORKDIR firmware/

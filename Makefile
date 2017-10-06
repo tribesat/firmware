@@ -31,7 +31,7 @@ $(HEX): $(BINARY)
 
 docker-build:
 	docker build -t firmware-builder .
-	docker run --rm -v `pwd`/:/firmware firmware-builder /bin/sh -c "make"
+	docker run --rm -v `pwd`/:/firmware firmware-builder make
 
 flash-arduino-uno: $(HEX)
 	avrdude -c $(PROGRAMMER) -p $(MMCU) -P $(USB) -U flash:w:$< -v
