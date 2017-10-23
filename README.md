@@ -4,8 +4,25 @@
 
 Onboard software for TribeSat
 
-## Comm setup
+## Developing
 
-The communications sketches in the `src/TribeSatSerialPayload` and `src/TribeSatSerialModem` are an initial version of how to do communciations.
+Running `make develop` symlinks this repository to your Arduino libraries directory. Make sure to use the absolute path in the command below.
 
-To develop this further, get two Arduino Uno's where pins 10 and 11 are cross-connected (10 to 11 for RX1/TX2, 11 to 10 for TX1/RX2). We use SoftwareSerial to connect using screen /dev/ttyACM0 57600 on the host computer end. Any screen input on the Payload side is turned into TribeSat ICD packets (1 char per packet) and transmitted to the Modem side where the entire packet is printed. The Modem side sends an ACK or NAK depending on whether the packet preamble is indeed HEX 50 50 50.
+```sh
+make develop ARDUINO_LIB_DIR=/Users/kelvin/Arduino/libraries
+```
+
+Now you can include the various components of the firmware in your Arduino code:
+
+```C++
+#include "Comms.h"
+#include "Packet.h"
+...
+```
+
+To set up hardware for developing and debugging, you can use 2 Arduinos; one acting as our payload and the other as the modem. One Uno pins 10 and 11 are cross-connected (10 to 11 for RX1/TX2, 11 to 10 for TX1/RX2) for serial communication. You can monitor the boards using the Arduino IDE serial monitor.
+
+## Tools
+
+The `/tools` directory contains an Arduino sketch `ModemEmulator` that makes turns an Arduino into an emulator of the onboard modem. It reads packets on serial and ACKs/NAKs them as appropriate.
+
