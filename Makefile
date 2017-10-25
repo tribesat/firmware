@@ -15,7 +15,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 BINARY = blink.elf
 HEX = blink.hex
 
-all: $(HEX)
+all: #$(HEX)
 
 # compile .cpp files to .o
 .cpp.o:
@@ -28,6 +28,11 @@ $(BINARY): $(OBJECTS)
 # convert .elf to hex file
 $(HEX): $(BINARY)
 	$(OBJCOPY) $(HEXFLAGS) $< $@
+
+# symlinks this repo to the Arduino libraries directory so that its
+# code can be included in Arduino Sketches written in the IDE
+develop:
+	ln -s `pwd` $(ARDUINO_LIB_DIR)/TribeSat
 
 docker-build:
 	docker build -t firmware-builder .
