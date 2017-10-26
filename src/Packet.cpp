@@ -1,5 +1,6 @@
 /**
- *
+ * Packet structure:
+ *   Temperature: 0 - 1
  */
 #define DEBUG // TODO: REMOVE ME
 
@@ -7,11 +8,14 @@
 #include "Packet.h"
 
 /**
- * Constructor with no packet
+ * Constructor
  */
 Packet::Packet() {
     this->header = this->packet; // header points to the top of the packet
     this->data = this->packet + PACKET_HEADER_SIZE; // data is offset PACKET_HEADER_SIZE bytes
+
+    // set header 0x50, 0x50 0x50
+    this->header[0] = this->header[1] = this->header[2] = 0x50;
 }
 
 /**
@@ -38,50 +42,20 @@ void Packet::print() {
 
     Serial.println("]");
 
-    // Parse packet data and output individual fields
-    // temperature data
-    int temp = 0;
-    temp |= this->data[1];
-    temp <<= 8;
-    temp |= this->data[0];
     Serial.print("Temperature: ");
-    Serial.println(temp);
+    Serial.println(*(int*)this->data);
 }
 #endif /* DEBUG */
-
-/**
- *
- */
-void Packet::setHeader(uint8_t* header) {
-    for (int i = 0; i < PACKET_HEADER_SIZE; i++)
-        this->header[i] = header[i];
-}
-
-/**
- * Write to a specific byte in the packet data
- */
-void Packet::setData(uint8_t byt, int index) {
-    this->data[index] = byt;
-}
-
-/**
- * Copies the data
- */
-void Packet::setData(uint8_t* data) {
-    for (int i = 0; i < PACKET_DATA_SIZE; i++)
-        this->data[i] = data[i];
-}
 
 /**
  * Encode sensor data into the packet
  */
 void Packet::setField(PacketField field, void* data) {
-    int temp;
+    int *d;
     switch (field) {
         case Temperature:
-            temp = *((int*)data);
-            this->data[0] = temp & 0xff;
-            this->data[1] = (temp >> 8) & 0xff;
+            d = (int*)this->data;
+            *d = *((int*)data);
             break;
 #ifdef DEBUG
         default:
@@ -91,7 +65,7 @@ void Packet::setField(PacketField field, void* data) {
 }
 
 /**
- * Returns a reference to the underlying array that is the packet
+ * Returns a pointer to the underlying array that is the packet
  */
 uint8_t* Packet::toArray() {
     return this->packet;

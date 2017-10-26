@@ -10,10 +10,6 @@
 
 #define SEND_NUM_RETRIES 5
 
-extern uint8_t PACKET_HEADER[3];
-extern uint8_t ACK[3];
-extern uint8_t NAK[3];
-
 /**
  *
  */

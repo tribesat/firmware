@@ -25,9 +25,6 @@ class Packet {
   public:
     Packet();
     ~Packet();
-    void setHeader(uint8_t* header);
-    void setData(uint8_t byt, int index);
-    void setData(uint8_t* data);
     void setField(PacketField field, void* data);
     uint8_t* toArray();
 #ifdef DEBUG

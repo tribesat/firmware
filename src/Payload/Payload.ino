@@ -11,7 +11,7 @@
 
 SoftwareSerial ModemSerial(10, 11); // RX, TX
 
-uint8_t *ackOrNak = new uint8_t[ACK_SIZE];
+uint8_t ackOrNak[ACK_SIZE];
 Packet *packet = new Packet();
 
 // For Adafruit TMP102
@@ -31,17 +31,16 @@ int readTempSensor() {
 /**
  *
  */
-int sendPacket(Packet* packet) {
+bool sendPacket(Packet* packet) {
   int retryCount = SEND_NUM_RETRIES;
 
 #ifdef DEBUG
-  Serial.print("sending packet: ");
-  packet->print();
+  Serial.print("sending packet: "); packet->print();
 #endif /* DEBUG */
 
   ModemSerial.write(packet->toArray(), PACKET_SIZE);
 
-  // read ACK or NAK - wait for 3 bytes to be written
+  // read ACK or NAK - wait for 3 bytes to be available
   while (ModemSerial.available() < ACK_SIZE)
     delay(100);
 
@@ -61,14 +60,14 @@ int sendPacket(Packet* packet) {
     retryCount--;
   }
 
-  if (isACK(ackOrNak)) {
-    return 1;
-  } else {
+  bool success = isACK(ackOrNak);
+
 #ifdef DEBUG
+  if (!success)
     Serial.print("Failed to send packet after "); Serial.print(SEND_NUM_RETRIES); Serial.println(" attemps");
 #endif /* DEBUG */
-    return 0;
-  }
+
+  return success;
 }
 
 /**
@@ -122,9 +121,6 @@ void setup() {
   // set the data rate for the SoftwareSerial port
   ModemSerial.begin(38400);
 
-  // all outgoing packets have the same header - write this once during setup
-  packet->setHeader(PACKET_HEADER);
-
   // set up temperature sensor
   initTempSensor();
 }
@@ -133,10 +129,9 @@ void setup() {
  *
  */
 void loop() {
-  // temperature
   int temp = readTempSensor();
   packet->setField(Temperature, &temp);
-  int success = sendPacket(packet);
+  bool success = sendPacket(packet);
 
 #ifdef DEBUG
   if (success) {
