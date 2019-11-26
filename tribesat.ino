@@ -71,8 +71,8 @@ void setup() {
   pinMode(muxB, OUTPUT);
   pinMode(muxC, OUTPUT);
   
-  I2CwriteByte(MPU9250_ADDRESS,0x37,0x02);  // Set by pass mode for the magnetometers
-  I2CwriteByte(MAG_ADDRESS,0x0A,0x16);  // Request continuous magnetometer measurements in 16 bits
+  //I2CwriteByte(MPU9250_ADDRESS,0x37,0x02);  // Set by pass mode for the magnetometers
+  //I2CwriteByte(MAG_ADDRESS,0x0A,0x16);  // Request continuous magnetometer measurements in 16 bits
 
   payload_packet[0]= 0x50;          // Preamble
   payload_packet[1]= 0x50;          // Preamble
@@ -114,7 +114,16 @@ void loop() {
   digitalWrite(LED_MONITOR, LOW);
   
   // read I2C (magnetometry data)
-  I2Cread();
+  uint8_t Mag[7];  
+  I2Cread(MAG_ADDRESS,0x03,7,Mag);
+  
+  /*int16_t mx=(Mag[1]<<8 | Mag[0]);
+  int16_t my=(Mag[3]<<8 | Mag[2]);
+  int16_t mz=(Mag[5]<<8 | Mag[4]);
+  float conv_m=0.1465;   // convertion factor for +-4,800uT range 0.6uT???, 16bits>0.1465, 14bits>0.2929
+  float mx_r=(mx)*conv_m;
+  float my_r=(my)*conv_m;
+  float mz_r=(mz)*conv_m;*/
   
   // read in solar sensor, infrared sensor, internal temperature,
   // external temperature, current monitor, and voltage monitor
