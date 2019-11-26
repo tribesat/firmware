@@ -31,6 +31,9 @@
 #define muxA 7        // Mux select A
 #define muxB 8        // Mux select B
 #define muxC 9        // Mux select C
+//define magnetometry address
+#define    MPU9250_ADDRESS            0x69    
+#define    MAG_ADDRESS                0x0C
 
 
 int sensors = 0;          // Value of the sensors coming fron the Mux
@@ -67,6 +70,9 @@ void setup() {
   pinMode(muxA, OUTPUT);
   pinMode(muxB, OUTPUT);
   pinMode(muxC, OUTPUT);
+  
+  I2CwriteByte(MPU9250_ADDRESS,0x37,0x02);  // Set by pass mode for the magnetometers
+  I2CwriteByte(MAG_ADDRESS,0x0A,0x16);  // Request continuous magnetometer measurements in 16 bits
 
   payload_packet[0]= 0x50;          // Preamble
   payload_packet[1]= 0x50;          // Preamble
@@ -106,7 +112,10 @@ void loop() {
   }
   // turn off LED once not busy
   digitalWrite(LED_MONITOR, LOW);
-
+  
+  // read I2C (magnetometry data)
+  I2Cread();
+  
   // read in solar sensor, infrared sensor, internal temperature,
   // external temperature, current monitor, and voltage monitor
   readMux();
@@ -116,6 +125,7 @@ void loop() {
 
   // read in digital temperature 2
   Read_DT2();
+ 
 
   // read in digital temperature 3
   Read_DT3();
@@ -158,6 +168,23 @@ void loop() {
 
   delay(500);
 
+}
+
+//**************************I2CReadByte()
+// This function read Nbytes bytes from I2C device at address Address. 
+// Put read bytes starting at register Register in the Data array. 
+void I2Cread(uint8_t Address, uint8_t Register, uint8_t Nbytes, uint8_t* Data)
+{
+  // Set register address
+  Wire.beginTransmission(Address);
+  Wire.write(Register);
+  Wire.endTransmission();
+  
+  // Read Nbytes
+  Wire.requestFrom(Address, Nbytes); 
+  uint8_t index=0;
+  while (Wire.available())
+    Data[index++]=Wire.read();
 }
 
 
