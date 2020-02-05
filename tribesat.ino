@@ -381,32 +381,14 @@ void Read_BG51(){
 
   // if voltage is greater than at least 1 volt, we read a charged particle
   // TODO: this threshold value should be better validated --Liz
-  // Converted voltage > 1 to voltage > 127 (of 1023 max) --Josh
-  if(voltage > 127) {
+  // Converted voltage > 1 to voltage > 310 (of 1023 max) --Josh/Liz
+  // Voltage is mapped from 0 to 3.3 V to 0 to 1023 int
+  if(voltage > 310) {
     particle_count++;
   }
 
-  // TODO: unsure of converting between an int count value and msb/lsb values --Liz
-  // Could have used highByte(), lowByte(), no need to distinguish >256, <256 --Josh
-  // Could have programmed wraparound if particle_count > 2^16. --Josh
-  if (particle_count < 256) {
-    int8_t msb = 0;
-    int8_t lsb = particle_count;
-    payload_packet[36] = msb;
-    payload_packet[37] = lsb;
-//    payload_packet[36] = 0;
-//    payload_packet[37] = particle_count;
-  }
-
-  // assume particle count doesn't exceed 2^16 (65536)
-  // exceeding 2^16 particles would be very unlikely by current estimates
-  if (particle_count >= 256) {
-    int8_t msb = particle_count >> 8;
-    int8_t lsb = particle_count << 8;
-    payload_packet[36] = msb;
-    payload_packet[37] = lsb;
-  }
-
+  payload_packet[36] = highByte(particle_count);
+  payload_packet[37] = lowByte(particle_count);
 }
 
 //********************ReadACK
