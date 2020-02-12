@@ -53,8 +53,8 @@ int tries = 0;            // Tries to resend a package to the ThinsSat
 int wait = 0;             // counter that will break out of serial monitor
                           // ACK loop if 50 tries is exceeded
 
-int16_t particle_count = 0;  // running count of charged particles the BG51
-                             // sensor has registered in its lifetime
+uint32_t particle_count = 0;  // running count of charged particles the BG51
+                              // sensor has registered in its lifetime
 
 static const int RX_pin = 3, TX_pin = 5;  // ThinSat serial comm lines
 SoftwareSerial thinsat_serial(RX_pin, TX_pin);    // Comm port for ThinSat
