@@ -79,18 +79,21 @@ void setup() {
 
   payload_packet[3]= 0x01;          // NSL Reserved
   payload_packet[4]= 0x01;          // Seq. Count
+  
+  payload_packet[5] = 96;           // 1: BG51
+  payload_packet[8] = 97;           // 2: Magnetometer
 
-  payload_packet[5]= 96;            // 1: ID_Lux
-  payload_packet[8]= 97;            // 2: ID_IR
-  payload_packet[11]= 98;           // 3: ID_IT
-  payload_packet[14]= 99;           // 4: ID_ET
-  payload_packet[17]= 100;          // 5: ID_Icc
-  payload_packet[20]= 101;          // 6: ID_Vcc
-  payload_packet[23]= 102;          // 7: ID_DT1
-  payload_packet[26]= 103;          // 8: ID_DT2
-  payload_packet[29]= 104;          // 9: ID_DT3
-  payload_packet[32]= 105;          // 10: ID_DT4
-  payload_packet[35]= 106;          // 11: ID_DT5
+  // payload_packet[5]= 96;            // 1: ID_Lux
+  // payload_packet[8]= 97;            // 2: ID_IR
+  // payload_packet[11]= 98;           // 3: ID_IT
+  // payload_packet[14]= 99;           // 4: ID_ET
+  // payload_packet[17]= 100;          // 5: ID_Icc
+  // payload_packet[20]= 101;          // 6: ID_Vcc
+  // payload_packet[23]= 102;          // 7: ID_DT1
+  // payload_packet[26]= 103;          // 8: ID_DT2
+  // payload_packet[29]= 104;          // 9: ID_DT3
+  // payload_packet[32]= 105;          // 10: ID_DT4
+  // payload_packet[35]= 106;          // 11: ID_DT5
 
   payload_packet[38]= 13;           // End of frame (byte 39)
 
@@ -114,7 +117,12 @@ void loop() {
   
   // read I2C (magnetometry data)
   uint8_t Mag[7];  
-  I2Cread(MAG_ADDRESS,0x03,7,Mag);
+  I2Cread(MAG_ADDRESS, 0x03, 7, Mag);
+  uint8_t packet_index = 9;
+  for(int i = 0; i < 7; i++) {
+    payload_packet[packet_index] = Mag[i];
+    packet_index++;
+  }
   
   /*int16_t mx=(Mag[1]<<8 | Mag[0]);
   int16_t my=(Mag[3]<<8 | Mag[2]);
@@ -193,6 +201,17 @@ void I2Cread(uint8_t Address, uint8_t Register, uint8_t Nbytes, uint8_t* Data)
   uint8_t index=0;
   while (Wire.available())
     Data[index++]=Wire.read();
+}
+
+//**************************I2CwriteByte()
+// This writes a byte to the provided address 
+void I2CwriteByte(uint8_t Address, uint8_t Register, uint8_t Data)
+{
+  // Set register address
+  Wire.beginTransmission(Address);
+  Wire.write(Register);
+  Wire.write(Data);
+  Wire.endTransmission();
 }
 
 
@@ -386,8 +405,8 @@ void Read_BG51(){
     particle_count++;
   }
 
-  payload_packet[36] = highByte(particle_count);
-  payload_packet[37] = lowByte(particle_count);
+  payload_packet[6] = highByte(particle_count);
+  payload_packet[7] = lowByte(particle_count);
 }
 
 //********************ReadACK
