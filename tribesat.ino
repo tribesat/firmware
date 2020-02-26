@@ -25,13 +25,12 @@
 #define SERIAL_BUSY 4        // Serial Busy line
 #define LED_MONITOR 13       // LED monitor
 
-// Mux = multiplexer shield. Used to turn an input into many outputs
-
 #define mux A7        // ADC reading the MUX_Output
 #define muxA 7        // Mux select A
 #define muxB 8        // Mux select B
 #define muxC 9        // Mux select C
-//define magnetometry address
+
+// define magnetometry address
 #define    MPU9250_ADDRESS            0x69    
 #define    MAG_ADDRESS                0x0C
 
@@ -42,7 +41,7 @@ int mux_delay = 10;       // delay between samples on Mux
 int i = 0;                // used as an auxiliary variable
 int led = 0;              // if led = 1, led is on. if led = 0, led is off
 
-byte payload_size = 38;   // Payload data is 35 bytes size (TODO: why 38?)
+byte payload_size = 38;   // Payload data is 35 bytes size
 byte payload_packet[38];  // Payload packet 50 50 50 Payload(35 bytes)
 int comm_status = 0;      // comm status = 1 means busy
 
@@ -71,8 +70,8 @@ void setup() {
   pinMode(muxB, OUTPUT);
   pinMode(muxC, OUTPUT);
   
-  //I2CwriteByte(MPU9250_ADDRESS,0x37,0x02);  // Set by pass mode for the magnetometers
-  //I2CwriteByte(MAG_ADDRESS,0x0A,0x16);  // Request continuous magnetometer measurements in 16 bits
+  I2CwriteByte(MPU9250_ADDRESS,0x37,0x02);  // Set by pass mode for the magnetometers
+  I2CwriteByte(MAG_ADDRESS,0x0A,0x16);  // Request continuous magnetometer measurements in 16 bits
 
   payload_packet[0]= 0x50;          // Preamble
   payload_packet[1]= 0x50;          // Preamble
@@ -127,20 +126,20 @@ void loop() {
   
   // read in solar sensor, infrared sensor, internal temperature,
   // external temperature, current monitor, and voltage monitor
-  readMux();
+  // readMux();
 
   // read in digital temperature 1
-  Read_DT1();
+  // Read_DT1();
 
   // read in digital temperature 2
-  Read_DT2();
+  // Read_DT2();
  
 
   // read in digital temperature 3
-  Read_DT3();
+  // Read_DT3();
 
   // read in digital temperature 4
-  Read_DT4();
+  // Read_DT4();
 
   // read in the current count of particles detected
   // by the BG51 radiation sensor
