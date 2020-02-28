@@ -95,7 +95,7 @@ void setup() {
   // payload_packet[32]= 105;          // 10: ID_DT4
   // payload_packet[35]= 106;          // 11: ID_DT5
 
-  payload_packet[38]= 13;           // End of frame (byte 39)
+  payload_packet[15]= 13;           // End of frame (byte 15)
 
   thinsat_serial.begin(38400);      // begin Serial Comm for ThinSat
                                     // Baud rate is 38400
@@ -118,20 +118,18 @@ void loop() {
   // read I2C (magnetometry data)
   uint8_t Mag[7];  
   I2Cread(MAG_ADDRESS, 0x03, 7, Mag);
-  uint8_t packet_index = 9;
-  for(int i = 0; i < 7; i++) {
-    payload_packet[packet_index] = Mag[i];
-    packet_index++;
-  }
-  
-  /*int16_t mx=(Mag[1]<<8 | Mag[0]);
-  int16_t my=(Mag[3]<<8 | Mag[2]);
-  int16_t mz=(Mag[5]<<8 | Mag[4]);
-  float conv_m=0.1465;   // convertion factor for +-4,800uT range 0.6uT???, 16bits>0.1465, 14bits>0.2929
-  float mx_r=(mx)*conv_m;
-  float my_r=(my)*conv_m;
-  float mz_r=(mz)*conv_m;*/
-  
+  int16_t mx = (Mag[1]<<8 | Mag[0]);
+  int16_t my = (Mag[3]<<8 | Mag[2]);
+  int16_t mz = (Mag[5]<<8 | Mag[4]);
+  // need to convert with this multiplication in the packet formatter
+  // float conv_m = 0.1465;   // convertion factor for +-4,800uT range 0.6uT???, 16bits>0.1465, 14bits>0.2929
+  payload_packet[9] = highByte(mx);
+  payload_packet[10] = lowByte(mx);
+  payload_packet[11] = highByte(my);
+  payload_packet[12] = lowByte(my);
+  payload_packet[13] = highByte(mz);
+  payload_packet[14] = lowByte(mz);
+    
   // read in solar sensor, infrared sensor, internal temperature,
   // external temperature, current monitor, and voltage monitor
   // readMux();
